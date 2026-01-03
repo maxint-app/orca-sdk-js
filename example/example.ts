@@ -1,24 +1,4 @@
-# Crosspay Server SDK for Typescript Nodejs
-
-To use crosspay endpoint in your nodejs server, this sdk can be used to simplify the integration
-
-## Installation
-
-Through npm/pnpm/yarn:
-```
-$ npm i @crosspay/server-sdk
-$ pnpm add @crosspay/server-sdk
-$ yarn add @crosspay/server-sdk
-```
-
-## Usage
-
-You can use this SDK to get customer information, subscription status and even list subscriptions.
-You must use the private API key (it should be private as the name suggest and must be kept as a secret) to get the results in your server.
-
-Basic usage example: 
-```typescript
-import { CrosspayServerClient } from "@crosspay/server-sdk";
+import { CrosspayServerClient } from "../src/index";
 
 export async function example() {
   const client = new CrosspayServerClient("your_api_key_here");
@@ -57,10 +37,3 @@ export async function example() {
 example().catch((error) => {
   console.error("Error in example:", error);
 });
-```
-
-## License
-
-[MIT](/LICENSE)
-
-© Copyright Maxint Inc. 2026
