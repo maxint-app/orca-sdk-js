@@ -1,5 +1,6 @@
 import createClient, { Client } from "openapi-fetch";
 import { paths, components } from "./schema";
+import crypto from "node:crypto";
 
 export type TenantEntitlement = components["schemas"]["TenantEntitlement"];
 export type TenantProduct = components["schemas"]["TenantProduct"];
@@ -100,5 +101,45 @@ export class CrosspayServerClient {
     });
 
     return data?.data;
+  }
+
+  constructWebhookEvent({
+    rawPayload,
+    signatureHeader,
+    timestampHeader,
+    webhookPublicKey,
+  }: {
+    webhookPublicKey: string;
+    rawPayload: Buffer;
+    signatureHeader: string;
+    timestampHeader: string;
+  }): components["schemas"]["GetCustomerExtendedInfoByEmailRow"] | null {
+    const timestampDate = new Date(timestampHeader);
+    const isWithinFiveMinuteWindow =
+      Math.abs(Date.now() - timestampDate.getTime()) < 5 * 60 * 1000;
+
+    if (!isWithinFiveMinuteWindow) {
+      return null;
+    }
+    const data = Buffer.concat([
+      Buffer.from(timestampHeader),
+      Buffer.from("."),
+      rawPayload,
+    ]);
+
+    if (
+      !crypto.verify(
+        null,
+        data,
+        webhookPublicKey,
+        Buffer.from(signatureHeader, "base64")
+      )
+    ) {
+      return null;
+    }
+
+    return JSON.parse(
+      rawPayload.toString("utf8")
+    ) as components["schemas"]["GetCustomerExtendedInfoByEmailRow"];
   }
 }
