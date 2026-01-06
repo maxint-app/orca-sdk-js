@@ -5,7 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "generate-api-client": "openapi-typescript http://localhost:8080/openapi.yaml --output ./src/schema.ts"
+    "filter-tenant-apis": "openapi-format http://localhost:8080/openapi.yaml -o dist/openapi-formatted.yaml --filterFile ./openapi-filters.yaml",
+    "generate-api-client": "npm run filter-tenant-apis; openapi-typescript ./dist/openapi-formatted.yaml --output ./src/schema.ts"
   },
   "keywords": [],
   "author": "",
