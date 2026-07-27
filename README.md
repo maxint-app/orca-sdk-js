@@ -1,14 +1,14 @@
-# Crosspay Server SDK for Typescript Nodejs
+# Orca Server SDK for Typescript Nodejs
 
-To use crosspay endpoint in your nodejs server, this sdk can be used to simplify the integration
+To use orca endpoints in your nodejs server, this sdk can be used to simplify the integration
 
 ## Installation
 
 Through npm/pnpm/yarn:
 ```
-$ npm i @crosspay/server-sdk
-$ pnpm add @crosspay/server-sdk
-$ yarn add @crosspay/server-sdk
+$ npm i @orca/server-sdk
+$ pnpm add @orca/server-sdk
+$ yarn add @orca/server-sdk
 ```
 
 ## Usage
@@ -18,10 +18,10 @@ You must use the private API key (it should be private as the name suggest and m
 
 Basic usage example: 
 ```typescript
-import { CrosspayServerClient } from "@crosspay/server-sdk";
+import { OrcaServerClient } from "@orca/server-sdk";
 
 export async function example() {
-  const client = new CrosspayServerClient("your_api_key_here");
+  const client = new OrcaServerClient("your_api_key_here");
 
   const products = await client.listProducts();
   console.log("Products:", products);

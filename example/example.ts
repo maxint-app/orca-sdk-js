@@ -1,7 +1,7 @@
-import { CrosspayServerClient } from "../src/index";
+import { OrcaServerClient } from "../src/index";
 
 export async function example() {
-  const client = new CrosspayServerClient("your_api_key_here");
+  const client = new OrcaServerClient("your_api_key_here");
 
   const products = await client.listProducts();
   console.log("Products:", products);

@@ -7,11 +7,11 @@ export type TenantProduct = components["schemas"]["TenantProduct"];
 export type StorableSubscription =
   components["schemas"]["StorableSubscription"];
 
-export class CrosspayServerClient {
+export class OrcaServerClient {
   client: Client<paths, `${string}/${string}`>;
   constructor(
     private apiKey: string,
-    private baseUrl: string = "https://api.crosspay.dev"
+    private baseUrl: string = "https://api.orca.maxint.com"
   ) {
     this.client = createClient<paths>({
       baseUrl: this.baseUrl,
