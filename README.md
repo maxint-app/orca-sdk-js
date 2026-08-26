@@ -1,56 +1,53 @@
-# Orca Server SDK for Typescript Nodejs
+# Orca SDK for TypeScript
 
-To use orca endpoints in your nodejs server, this sdk can be used to simplify the integration
+This package includes:
+- `OrcaServerClient` for backend/server usage (private API key)
+- `OrcaClient` for browser/web usage (public API key)
 
 ## Installation
 
 Through npm/pnpm/yarn:
 ```
-$ npm i @orca/server-sdk
-$ pnpm add @orca/server-sdk
-$ yarn add @orca/server-sdk
+$ npm i @maxint/orca-sdk
+$ pnpm add @maxint/orca-sdk
+$ yarn add @maxint/orca-sdk
 ```
 
-## Usage
+## Server Usage (`OrcaServerClient`)
 
-You can use this SDK to get customer information, subscription status and even list subscriptions.
-You must use the private API key (it should be private as the name suggest and must be kept as a secret) to get the results in your server.
+Use your private API key on the server.
 
-Basic usage example: 
 ```typescript
-import { OrcaServerClient } from "@orca/server-sdk";
+import { OrcaServerClient } from "@maxint/orca-sdk";
 
 export async function example() {
-  const client = new OrcaServerClient("your_api_key_here");
+  const client = new OrcaServerClient("your_private_api_key_here");
 
   const products = await client.listProducts();
   console.log("Products:", products);
 
-  const entitlements = await client.listEntitlements("production");
+  const entitlements = await client.listEntitlements("prod");
   console.log("Entitlements:", entitlements);
 
-  const activeSubscription = await client.getActiveSubscription(
-    "customer_email@example.com"
-  );
-  console.log("Active Subscription:", activeSubscription);
-
-  const activeProduct = await client.getActiveProduct(
-    "customer_email@example.com"
-  );
-  console.log("Active Product:", activeProduct);
-
-  const activeEntitlement = await client.getActiveEntitlement(
+  const activeEntitlements = await client.getActiveEntitlements(
     "customer_email@example.com",
     "sandbox"
   );
-  console.log("Active Entitlement:", activeEntitlement);
+  console.log("Active Entitlements:", activeEntitlements);
+
+  const activeProducts = await client.getActiveProducts(
+    "customer_email@example.com",
+    "sandbox"
+  );
+  console.log("Active Products:", activeProducts);
 
   const customerInfo = await client.getCustomerInfo(
-    "customer_email@example.com"
+    "customer_email@example.com",
+    "sandbox"
   );
   console.log("Customer Info:", customerInfo);
 
-  const customers = await client.listCustomers(20, undefined);
+  const customers = await client.listCustomers(20);
   console.log("Customers:", customers);
 }
 
@@ -58,6 +55,34 @@ example().catch((error) => {
   console.error("Error in example:", error);
 });
 ```
+
+## Browser Usage (`OrcaClient`)
+
+Use your public key in browser apps.
+
+```typescript
+import { OrcaClient } from "@maxint/orca-sdk";
+
+const client = new OrcaClient("your_public_key_here", "sandbox");
+
+const products = await client.queryProducts("stripe");
+console.log("Products:", products);
+
+const entitlement = (await client.listEntitlements())[0];
+if (entitlement) {
+  const checkoutUrl = await client.purchase({
+    store: "stripe",
+    entitlement,
+    customerEmail: "customer_email@example.com",
+    redirectUrl: "https://your-app.example/success",
+    failureRedirectUrl: "https://your-app.example/failure",
+  });
+
+  console.log("Checkout URL:", checkoutUrl);
+}
+```
+
+When `autoRedirect` is `true` (default), `purchase` redirects the browser to checkout automatically.
 
 ## License
 
