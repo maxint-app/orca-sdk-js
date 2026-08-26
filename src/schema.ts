@@ -38,6 +38,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/tenant-server/gocardless/cancel/{environment}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post tenant server gocardless cancel by environment */
+        post: operations["post-tenant-server-gocardless-cancel-by-environment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tenant-server/stripe/cancel/{environment}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post tenant server stripe cancel by environment */
+        post: operations["post-tenant-server-stripe-cancel-by-environment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tenant-server/v2/customer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post tenant server v2 customer */
+        post: operations["post-tenant-server-v2-customer"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tenant/entitlements/active": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post tenant entitlements active */
+        post: operations["post-tenant-entitlements-active"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/tenant/entitlements/{environment}": {
         parameters: {
             query?: never;
@@ -55,17 +123,68 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/tenant/gocardless/products/{environment}": {
+    "/tenant/gocardless/billing-request-flow/{environment}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get tenant gocardless products by environment */
-        get: operations["get-tenant-gocardless-products-by-environment"];
+        get?: never;
+        put?: never;
+        /** Post tenant gocardless billing request flow by environment */
+        post: operations["post-tenant-gocardless-billing-request-flow-by-environment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tenant/identify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post tenant identify */
+        post: operations["post-tenant-identify"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tenant/offerings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get tenant offerings */
+        get: operations["get-tenant-offerings"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tenant/playstore/sync-purchases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post tenant playstore sync purchases */
+        post: operations["post-tenant-playstore-sync-purchases"];
         delete?: never;
         options?: never;
         head?: never;
@@ -144,6 +263,29 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        CustomerEntitlement: {
+            id: string;
+            name: string;
+            status?: string;
+            store?: string;
+        };
+        CustomerEntitlements: {
+            customer_id: string;
+            email: string;
+            purchases: components["schemas"]["PurchaseItem"][] | null;
+            subscriptions: components["schemas"]["SubscriptionItem"][] | null;
+        };
+        CustomerListItem: {
+            customer_id: string;
+            email: string;
+            entitlements: components["schemas"]["CustomerEntitlement"][] | null;
+            products: components["schemas"]["CustomerProduct"][] | null;
+            status: string;
+        };
+        CustomerProduct: {
+            id: string;
+            name: string;
+        };
         ErrorDetail: {
             /** @description Where the error occurred, e.g. 'body.items[3].tags' or 'path.thing-id' */
             location?: string;
@@ -193,7 +335,9 @@ export interface components {
         };
         GetCustomerExtendedInfoByEmailRow: {
             email: string;
+            email_sha256_sum: string | null;
             entitlement_name: string | null;
+            entitlement_type: string | null;
             id: string;
             product_id: string | null;
             product_name: string | null;
@@ -210,24 +354,46 @@ export interface components {
             data: components["schemas"]["PaginatedCustomers"];
             error?: string;
         };
-        ListCustomersByAppIDAndOrgIDPaginatedRow: {
-            email: string;
-            entitlement_name: string | null;
-            id: string;
-            product_id: string | null;
-            product_name: string | null;
-            status: string | null;
-            store: string | null;
-        };
         PaginatedCustomers: {
-            customers: components["schemas"]["ListCustomersByAppIDAndOrgIDPaginatedRow"][] | null;
+            customers: components["schemas"]["CustomerListItem"][] | null;
             /** Format: int64 */
             limit: number;
             next_cursor?: string;
             /** Format: int64 */
             total?: number;
         };
+        PlayStorePastPurchase: {
+            product_id: string;
+            purchase_id: string;
+            purchase_token: string;
+            transaction_date: string;
+        };
+        PurchaseItem: {
+            entitlement_id: string;
+            entitlement_name: string;
+            entitlement_type: string;
+            product_id: string;
+            product_name: string;
+            purchase_state: string;
+            status: string;
+            store: string;
+        };
+        StorableEntitlement: {
+            entitlement_id: string;
+            entitlement_type: string;
+            /** Format: int64 */
+            expires_at: number;
+            id: string;
+            product_id: string;
+            purchase_state?: string;
+            renewal_status?: string;
+            status: string;
+            store: string;
+            /** Format: int64 */
+            trial_expires_at: number | null;
+        };
         StorableSubscription: {
+            entitlement_id: string;
             /** Format: int64 */
             expires_at: number;
             id: string;
@@ -235,16 +401,17 @@ export interface components {
             renewal_status: string;
             status: string;
             store: string;
+            /** Format: int64 */
+            trial_expires_at: number | null;
         };
-        SubscriptionGocardlessProduct: {
-            checkout_url: string;
-            currency: string;
-            description?: string;
-            formatted_price: string;
-            id: string;
-            name: string;
-            /** Format: int32 */
-            price: number;
+        SubscriptionItem: {
+            entitlement_id: string;
+            entitlement_name: string;
+            entitlement_type: string;
+            product_id: string;
+            product_name: string;
+            status: string;
+            store: string;
         };
         SubscriptionStripePrice: {
             currency: string;
@@ -277,6 +444,27 @@ export interface components {
             updated: number;
             url?: string;
         };
+        TenantActiveEntitlementsInputBody: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example https://example.com/schemas/TenantActiveEntitlementsInputBody.json
+             */
+            readonly $schema?: string;
+            customer_email: string;
+            /** @default prod */
+            environment: string | null;
+        };
+        TenantActiveEntitlementsResponseBody: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example https://example.com/schemas/TenantActiveEntitlementsResponseBody.json
+             */
+            readonly $schema?: string;
+            data?: components["schemas"]["StorableEntitlement"][] | null;
+            error?: string;
+        };
         TenantActiveSubscriptionInputBody: {
             /**
              * Format: uri
@@ -285,6 +473,8 @@ export interface components {
              */
             readonly $schema?: string;
             customer_email: string;
+            /** @default prod */
+            environment: string | null;
         };
         TenantActiveSubscriptionResponseBody: {
             /**
@@ -296,13 +486,53 @@ export interface components {
             data?: components["schemas"]["StorableSubscription"];
             error?: string;
         };
+        TenantCancelGoCardlessSubscriptionInputBody: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example https://example.com/schemas/TenantCancelGoCardlessSubscriptionInputBody.json
+             */
+            readonly $schema?: string;
+            customer_email: string;
+            entitlement_id: string;
+        };
+        TenantCancelGoCardlessSubscriptionResponseBody: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example https://example.com/schemas/TenantCancelGoCardlessSubscriptionResponseBody.json
+             */
+            readonly $schema?: string;
+            error?: string;
+        };
+        TenantCancelStripeSubscriptionInputBody: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example https://example.com/schemas/TenantCancelStripeSubscriptionInputBody.json
+             */
+            readonly $schema?: string;
+            customer_email: string;
+            entitlement_id: string;
+        };
+        TenantCancelStripeSubscriptionResponseBody: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example https://example.com/schemas/TenantCancelStripeSubscriptionResponseBody.json
+             */
+            readonly $schema?: string;
+            error?: string;
+        };
         TenantEntitlement: {
             description: string | null;
+            /** @enum {string} */
+            entitlement_type: "consumable" | "non_consumable" | "subscription";
             id: string;
             metadata: string;
             name: string;
             /** Format: int64 */
-            period_ms: number;
+            period_ms: number | null;
             products: components["schemas"]["TenantProducts"];
         };
         TenantEntitlementProduct: {
@@ -311,6 +541,50 @@ export interface components {
             metadata: string;
             name: string;
             product_id: string;
+        };
+        TenantGoCardlessBillingRequestFlowInputBody: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example https://example.com/schemas/TenantGoCardlessBillingRequestFlowInputBody.json
+             */
+            readonly $schema?: string;
+            customer_email: string;
+            failure_redirect_url: string;
+            product_id: string;
+            prorated_product_id?: string;
+            /** @enum {string} */
+            proration_mode?: "upgrade" | "downgrade";
+            redirect_url: string;
+        };
+        TenantGoCardlessBillingRequestFlowResponseBody: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example https://example.com/schemas/TenantGoCardlessBillingRequestFlowResponseBody.json
+             */
+            readonly $schema?: string;
+            error?: string;
+            url: string;
+        };
+        TenantIdentifyUserInputBody: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example https://example.com/schemas/TenantIdentifyUserInputBody.json
+             */
+            readonly $schema?: string;
+            customer_email: string;
+        };
+        TenantIdentifyUserResponseBody: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example https://example.com/schemas/TenantIdentifyUserResponseBody.json
+             */
+            readonly $schema?: string;
+            customer_id?: string;
+            error?: string;
         };
         TenantListEntitlementsResponseBody: {
             /**
@@ -322,14 +596,14 @@ export interface components {
             data: components["schemas"]["TenantEntitlement"][] | null;
             error?: string;
         };
-        TenantListGocardlessProductsResponseBody: {
+        TenantListOfferingsResponseBody: {
             /**
              * Format: uri
              * @description A URL to the JSON Schema for this object.
-             * @example https://example.com/schemas/TenantListGocardlessProductsResponseBody.json
+             * @example https://example.com/schemas/TenantListOfferingsResponseBody.json
              */
             readonly $schema?: string;
-            data: components["schemas"]["SubscriptionGocardlessProduct"][] | null;
+            data?: components["schemas"]["TenantOfferingsWithEntitlements"][] | null;
             error?: string;
         };
         TenantListProductsResponseBody: {
@@ -351,6 +625,22 @@ export interface components {
             readonly $schema?: string;
             data: components["schemas"]["SubscriptionStripeProduct"][] | null;
             error?: string;
+        };
+        TenantOfferingEntitlement: {
+            description: string | null;
+            entitlement_type: string;
+            id: string;
+            /** Format: int32 */
+            level: number;
+            name: string;
+        };
+        TenantOfferingsWithEntitlements: {
+            /** Format: date-time */
+            created_at: string;
+            description: string | null;
+            entitlements: components["schemas"]["TenantOfferingEntitlement"][] | null;
+            id: string;
+            name: string;
         };
         TenantProduct: {
             description: string | null;
@@ -375,6 +665,8 @@ export interface components {
              */
             readonly $schema?: string;
             customer_email: string;
+            /** @default prod */
+            environment: string | null;
         };
         TenantServerGetCustomerResponseBody: {
             /**
@@ -384,6 +676,16 @@ export interface components {
              */
             readonly $schema?: string;
             data?: components["schemas"]["GetCustomerExtendedInfoByEmailRow"];
+            error?: string;
+        };
+        TenantServerGetCustomerV2ResponseBody: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example https://example.com/schemas/TenantServerGetCustomerV2ResponseBody.json
+             */
+            readonly $schema?: string;
+            data?: components["schemas"]["CustomerEntitlements"];
             error?: string;
         };
         TenantStripeCheckoutInputBody: {
@@ -396,6 +698,9 @@ export interface components {
             customer_email: string;
             failure_redirect_url: string;
             product_id: string;
+            prorated_product_id?: string;
+            /** @enum {string} */
+            proration_mode?: "upgrade" | "downgrade";
             redirect_url: string;
         };
         TenantStripeCheckoutResponseBody: {
@@ -407,6 +712,37 @@ export interface components {
             readonly $schema?: string;
             error?: string;
             url: string;
+        };
+        TenantSyncPlayStorePastPurchasesInputBody: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example https://example.com/schemas/TenantSyncPlayStorePastPurchasesInputBody.json
+             */
+            readonly $schema?: string;
+            customer_email: string;
+            past_purchases: components["schemas"]["PlayStorePastPurchase"][] | null;
+        };
+        TenantSyncPlayStorePastPurchasesResponseBody: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example https://example.com/schemas/TenantSyncPlayStorePastPurchasesResponseBody.json
+             */
+            readonly $schema?: string;
+            data?: components["schemas"]["TenantSyncPlayStorePurchaseResponseData"];
+            error?: string;
+        };
+        TenantSyncPlayStorePurchaseResponseData: {
+            products?: components["schemas"]["TenantSyncProduct"][] | null;
+        };
+        TenantSyncProduct: {
+            description: string | null;
+            entitlement_id: string;
+            id: string;
+            name: string;
+            product_id: string;
+            receipt: string;
         };
     };
     responses: never;
@@ -455,6 +791,7 @@ export interface operations {
             query?: {
                 limit?: number;
                 cursor?: string;
+                sandbox?: boolean;
             };
             header?: never;
             path?: never;
@@ -469,6 +806,142 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ListCustomerResponseBody"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    "post-tenant-server-gocardless-cancel-by-environment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                environment: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TenantCancelGoCardlessSubscriptionInputBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantCancelGoCardlessSubscriptionResponseBody"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    "post-tenant-server-stripe-cancel-by-environment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                environment: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TenantCancelStripeSubscriptionInputBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantCancelStripeSubscriptionResponseBody"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    "post-tenant-server-v2-customer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TenantServerGetCustomerInputBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantServerGetCustomerV2ResponseBody"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    "post-tenant-entitlements-active": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TenantActiveEntitlementsInputBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantActiveEntitlementsResponseBody"];
                 };
             };
             /** @description Error */
@@ -513,13 +986,79 @@ export interface operations {
             };
         };
     };
-    "get-tenant-gocardless-products-by-environment": {
+    "post-tenant-gocardless-billing-request-flow-by-environment": {
         parameters: {
             query?: never;
             header?: never;
             path: {
                 environment: string;
             };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TenantGoCardlessBillingRequestFlowInputBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantGoCardlessBillingRequestFlowResponseBody"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    "post-tenant-identify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TenantIdentifyUserInputBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantIdentifyUserResponseBody"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    "get-tenant-offerings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -530,7 +1069,40 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TenantListGocardlessProductsResponseBody"];
+                    "application/json": components["schemas"]["TenantListOfferingsResponseBody"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    "post-tenant-playstore-sync-purchases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TenantSyncPlayStorePastPurchasesInputBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantSyncPlayStorePastPurchasesResponseBody"];
                 };
             };
             /** @description Error */
