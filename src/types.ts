@@ -11,6 +11,8 @@ export type ListCustomerResponseBody =
   components["schemas"]["ListCustomerResponseBody"];
 export type SubscriptionStripeProduct =
   components["schemas"]["SubscriptionStripeProduct"];
+export type SubscriptionGocardlessProduct =
+  components["schemas"]["SubscriptionGocardlessProduct"];
 
 export type Environment = "prod" | "sandbox";
 export type LegacyEnvironment = "production" | "sandbox";

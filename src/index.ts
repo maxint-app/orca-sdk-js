@@ -11,6 +11,7 @@ export type {
   ProrationMode,
   StorableEntitlement,
   StorableSubscription,
+  SubscriptionGocardlessProduct,
   SubscriptionStripeProduct,
   TenantEntitlement,
   TenantProduct,

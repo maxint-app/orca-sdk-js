@@ -1,7 +1,6 @@
 import {
   createOrcaApiClient,
   extractErrorMessage,
-  joinBaseUrl,
   normalizeEnvironment,
   throwForBodyError,
   type OrcaApiClient,
@@ -13,18 +12,9 @@ import type {
   OrcaClientProduct,
   ProrationMode,
   StorableEntitlement,
+  SubscriptionGocardlessProduct,
   TenantEntitlement,
 } from "./types.js";
-
-type GoCardlessProduct = {
-  id: string;
-  name: string;
-  description?: string | null;
-  formatted_price?: string;
-  formattedPrice?: string;
-  price: number;
-  currency: string;
-};
 
 export class OrcaClient {
   readonly client: OrcaApiClient;
@@ -49,26 +39,6 @@ export class OrcaClient {
       );
     }
     return resolvedEmail;
-  }
-
-  private async requestJson<T>(path: string, init?: RequestInit): Promise<T> {
-    const response = await fetch(joinBaseUrl(this.baseUrl, path), {
-      ...init,
-      headers: {
-        "api-key": this.publicKey,
-        ...(init?.body ? { "content-type": "application/json" } : {}),
-        ...(init?.headers ?? {}),
-      },
-    });
-
-    const text = await response.text();
-    const body = text ? (JSON.parse(text) as T) : ({} as T);
-
-    if (!response.ok) {
-      throw new Error(extractErrorMessage(body));
-    }
-
-    return body;
   }
 
   async listEntitlements(): Promise<TenantEntitlement[]> {
@@ -203,13 +173,27 @@ export class OrcaClient {
       return products;
     }
 
-    const gocardlessResponse = await this.requestJson<{
-      data?: GoCardlessProduct[] | null;
-      error?: string;
-    }>(`/tenant/gocardless/products/${normalizedEnvironment}`);
+    const gocardlessResponse = await this.client.GET(
+      "/tenant/gocardless/products/{environment}",
+      {
+        params: {
+          path: {
+            environment: normalizedEnvironment,
+          },
+        },
+      }
+    );
 
-    throwForBodyError(gocardlessResponse);
-    const storeProducts = gocardlessResponse.data ?? [];
+    if (gocardlessResponse.error) {
+      throw new Error(extractErrorMessage(gocardlessResponse.error));
+    }
+
+    if (!gocardlessResponse.data) {
+      return [];
+    }
+
+    throwForBodyError(gocardlessResponse.data);
+    const storeProducts = gocardlessResponse.data.data ?? [];
 
     const products: OrcaClientProduct[] = [];
     for (const storeProduct of storeProducts) {
@@ -220,15 +204,16 @@ export class OrcaClient {
         continue;
       }
 
+      const gocardlessProduct = storeProduct as SubscriptionGocardlessProduct;
+
       products.push({
         id: storeProduct.id,
         name: storeProduct.name,
         accessLevel: entitlement.name,
-        currencyCode: storeProduct.currency,
-        description: storeProduct.description ?? "",
-        formattedPrice:
-          storeProduct.formatted_price ?? storeProduct.formattedPrice ?? "",
-        price: storeProduct.price / 100,
+        currencyCode: gocardlessProduct.currency,
+        description: gocardlessProduct.description ?? "",
+        formattedPrice: gocardlessProduct.formatted_price,
+        price: gocardlessProduct.price / 100,
         store,
         subscriptionRecurrenceDays:
           entitlement.period_ms == null
@@ -287,22 +272,58 @@ export class OrcaClient {
       throw new Error(`Entitlement '${entitlement.name}' has no ${store} product`);
     }
 
-    const endpoint =
-      store === "stripe"
-        ? `/tenant/stripe/checkout/${normalizedEnvironment}`
-        : `/tenant/gocardless/billing-request-flow/${normalizedEnvironment}`;
+    const requestBody: {
+      customer_email: string;
+      product_id: string;
+      redirect_url: string;
+      failure_redirect_url: string;
+      prorated_product_id?: string;
+      proration_mode?: ProrationMode;
+    } = {
+      customer_email: resolvedCustomerEmail,
+      product_id: productId,
+      redirect_url: redirectUrl,
+      failure_redirect_url: failureRedirectUrl,
+    };
 
-    const body = await this.requestJson<{ error?: string; url?: string }>(endpoint, {
-      method: "POST",
-      body: JSON.stringify({
-        customer_email: resolvedCustomerEmail,
-        product_id: productId,
-        redirect_url: redirectUrl,
-        failure_redirect_url: failureRedirectUrl,
-        prorated_product_id: proratedProductId,
-        proration_mode: prorationMode,
-      }),
-    });
+    if (proratedProductId !== undefined) {
+      requestBody.prorated_product_id = proratedProductId;
+    }
+
+    if (prorationMode !== undefined) {
+      requestBody.proration_mode = prorationMode;
+    }
+
+    const response =
+      store === "stripe"
+        ? await this.client.POST("/tenant/stripe/checkout/{environment}", {
+            params: {
+              path: {
+                environment: normalizedEnvironment,
+              },
+            },
+            body: requestBody,
+          })
+        : await this.client.POST(
+            "/tenant/gocardless/billing-request-flow/{environment}",
+            {
+              params: {
+                path: {
+                  environment: normalizedEnvironment,
+                },
+              },
+              body: requestBody,
+            }
+          );
+
+    if (response.error) {
+      throw new Error(extractErrorMessage(response.error));
+    }
+
+    const body = response.data;
+    if (!body) {
+      throw new Error(`Empty ${store} checkout response`);
+    }
 
     throwForBodyError(body);
 

@@ -56,19 +56,6 @@ example().catch((error) => {
 });
 ```
 
-### Go-aligned server method names
-
-`OrcaServerClient` includes both camelCase methods and Go-aligned PascalCase aliases:
-- `listProducts` / `ListProducts`
-- `listEntitlements` / `ListEntitlements`
-- `getActiveEntitlements` / `GetActiveEntitlements`
-- `getActiveProducts` / `GetActiveProducts`
-- `listCustomers` / `ListCustomers`
-- `getCustomerInfo` / `GetCustomerInfo`
-- `cancelStripeSubscription` / `CancelStripeSubscription`
-- `cancelGocardlessSubscription` / `CancelGocardlessSubscription`
-- `constructWebhookEvent` / `ConstructWebhookEvent`
-
 ## Browser Usage (`OrcaClient`)
 
 Use your public key in browser apps.

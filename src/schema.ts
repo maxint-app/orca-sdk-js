@@ -140,6 +140,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/tenant/gocardless/products/{environment}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get tenant gocardless products by environment */
+        get: operations["get-tenant-gocardless-products-by-environment"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/tenant/identify": {
         parameters: {
             query?: never;
@@ -404,6 +421,15 @@ export interface components {
             /** Format: int64 */
             trial_expires_at: number | null;
         };
+        SubscriptionGocardlessProduct: {
+            currency: string;
+            description?: string;
+            formatted_price: string;
+            id: string;
+            name: string;
+            /** Format: int32 */
+            price: number;
+        };
         SubscriptionItem: {
             entitlement_id: string;
             entitlement_name: string;
@@ -594,6 +620,16 @@ export interface components {
              */
             readonly $schema?: string;
             data: components["schemas"]["TenantEntitlement"][] | null;
+            error?: string;
+        };
+        TenantListGocardlessProductsResponseBody: {
+            /**
+             * Format: uri
+             * @description A URL to the JSON Schema for this object.
+             * @example https://example.com/schemas/TenantListGocardlessProductsResponseBody.json
+             */
+            readonly $schema?: string;
+            data: components["schemas"]["SubscriptionGocardlessProduct"][] | null;
             error?: string;
         };
         TenantListOfferingsResponseBody: {
@@ -1008,6 +1044,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TenantGoCardlessBillingRequestFlowResponseBody"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ErrorModel"];
+                };
+            };
+        };
+    };
+    "get-tenant-gocardless-products-by-environment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                environment: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantListGocardlessProductsResponseBody"];
                 };
             };
             /** @description Error */

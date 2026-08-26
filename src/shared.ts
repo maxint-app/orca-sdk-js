@@ -49,8 +49,3 @@ export function throwForBodyError(body: { error?: string | undefined }): void {
     throw new Error(body.error);
   }
 }
-
-export function joinBaseUrl(baseUrl: string, path: string): string {
-  const normalizedBase = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
-  return new URL(path.replace(/^\//, ""), normalizedBase).toString();
-}
