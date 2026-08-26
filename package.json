@@ -1,5 +1,5 @@
 {
-  "name": "@orca/sdk-js",
+  "name": "@maxint/orca-sdk",
   "version": "1.0.0",
   "description": "JavaScript SDK for Orca by Maxint",
   "main": "index.js",

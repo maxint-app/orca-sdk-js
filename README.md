@@ -8,9 +8,9 @@ This package includes:
 
 Through npm/pnpm/yarn:
 ```
-$ npm i @orca/sdk-js
-$ pnpm add @orca/sdk-js
-$ yarn add @orca/sdk-js
+$ npm i @maxint/orca-sdk
+$ pnpm add @maxint/orca-sdk
+$ yarn add @maxint/orca-sdk
 ```
 
 ## Server Usage (`OrcaServerClient`)
@@ -18,7 +18,7 @@ $ yarn add @orca/sdk-js
 Use your private API key on the server.
 
 ```typescript
-import { OrcaServerClient } from "@orca/sdk-js";
+import { OrcaServerClient } from "@maxint/orca-sdk";
 
 export async function example() {
   const client = new OrcaServerClient("your_private_api_key_here");
@@ -74,7 +74,7 @@ example().catch((error) => {
 Use your public key in browser apps.
 
 ```typescript
-import { OrcaClient } from "@orca/sdk-js";
+import { OrcaClient } from "@maxint/orca-sdk";
 
 const client = new OrcaClient("your_public_key_here", "sandbox");
 
