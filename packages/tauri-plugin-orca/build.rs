@@ -1,0 +1,18 @@
+const COMMANDS: &[&str] = &[
+  "runtime_platform",
+  "configure",
+  "identify",
+  "logout",
+  "query_products",
+  "purchase",
+  "get_active_entitlements",
+  "active_product",
+  "list_entitlements",
+];
+
+fn main() {
+  tauri_plugin::Builder::new(COMMANDS)
+    .android_path("android")
+    .ios_path("ios")
+    .build();
+}

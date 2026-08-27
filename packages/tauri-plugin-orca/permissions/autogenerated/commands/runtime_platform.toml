@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-runtime-platform"
+description = "Enables the runtime_platform command without any pre-configured scope."
+commands.allow = ["runtime_platform"]
+
+[[permission]]
+identifier = "deny-runtime-platform"
+description = "Denies the runtime_platform command without any pre-configured scope."
+commands.deny = ["runtime_platform"]

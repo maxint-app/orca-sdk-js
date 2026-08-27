@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-active-product"
+description = "Enables the active_product command without any pre-configured scope."
+commands.allow = ["active_product"]
+
+[[permission]]
+identifier = "deny-active-product"
+description = "Denies the active_product command without any pre-configured scope."
+commands.deny = ["active_product"]

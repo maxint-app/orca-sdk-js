@@ -1,0 +1,13 @@
+[default]
+description = "Default permissions for the plugin"
+permissions = [
+  "allow-runtime-platform",
+  "allow-configure",
+  "allow-identify",
+  "allow-logout",
+  "allow-query-products",
+  "allow-purchase",
+  "allow-get-active-entitlements",
+  "allow-active-product",
+  "allow-list-entitlements",
+]
