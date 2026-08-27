@@ -102,9 +102,9 @@ The iOS plugin (`ios/`) bridges to `orca-apple` via SwiftPM:
 
 macOS uses a Rust->Swift FFI bridge into `orca-apple`:
 
-- FFI exports live in `orca-apple/Sources/Orca/Core/OrcaFFI.swift`
+- FFI exports live in `macos-bridge/Sources/OrcaTauriBridge/OrcaFFI.swift`
 - Rust desktop glue is in `src/desktop.rs` (`macos_ffi` module)
-- The Swift package is linked in `build.rs` via `swift-rs`
+- The local bridge package is linked in `build.rs` via `swift-rs`
 
 ## Native Command Mapping
 

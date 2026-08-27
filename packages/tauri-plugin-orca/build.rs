@@ -14,7 +14,7 @@ fn main() {
   #[cfg(target_os = "macos")]
   {
     swift_rs::SwiftLinker::new("12")
-      .with_git("Orca", "https://github.com/maxint-app/orca-apple.git", "main")
+      .with_package("OrcaTauriBridge", "macos-bridge")
       .link();
   }
 
