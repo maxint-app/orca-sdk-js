@@ -2,64 +2,123 @@
 
 Cross-platform Orca plugin for Tauri apps.
 
-Platform routing:
-- Web, Windows, Linux: uses `@maxint/orca-sdk` directly.
-- macOS, iOS: calls native plugin commands intended to be backed by `orca-apple`.
-- Android: calls native plugin commands intended to be backed by `orca-android`.
+## Platform Routing
+
+| Platform     | Backend                                        |
+| ------------ | ---------------------------------------------- |
+| Web          | `@maxint/orca-sdk` (direct)                    |
+| Windows      | `@maxint/orca-sdk` (direct)                    |
+| Linux        | `@maxint/orca-sdk` (direct)                    |
+| macOS        | `orca-apple` via Rust->Swift FFI bridge        |
+| iOS          | `orca-apple` via native Swift plugin           |
+| Android      | `orca-android` via native Kotlin plugin        |
+
+## Installation
+
+```bash
+# npm
+npm install @maxint/orca-sdk tauri-plugin-orca-api
+# pnpm
+pnpm add @maxint/orca-sdk tauri-plugin-orca-api
+```
+
+Register the plugin in your Tauri app:
+
+```rust
+use tauri_plugin_orca;
+
+tauri::Builder::default()
+  .plugin(tauri_plugin_orca::init())
+  .run(tauri::generate_context!())
+```
+
+Add the plugin permission to your capabilities:
+
+```json
+{
+  "identifier": "default",
+  "windows": ["main"],
+  "permissions": ["orca:default"]
+}
+```
 
 ## JavaScript API
+
+The API mirrors `flutter_orca`.
 
 ```ts
 import { Orca } from 'tauri-plugin-orca-api'
 
 const orca = new Orca({
   publicKey: 'public_key',
-  environment: 'sandbox',
-  customerEmail: 'user@example.com',
+  environment: 'sandbox', // 'prod' | 'sandbox'
+  customerEmail: 'user@example.com', // optional
 })
 
+// identity
 await orca.identify('user@example.com')
+orca.logout()
+
+// products & entitlements
 const entitlements = await orca.listEntitlements()
-const products = await orca.queryProducts('stripe')
+const products = await orca.queryProducts('stripe') // 'stripe' | 'gocardless'
+const activeProducts = await orca.activeProduct()
+const activeEntitlements = await orca.getActiveEntitlements()
+
+// purchase
 await orca.purchase(entitlements[0], {
   externalStore: 'stripe',
   redirectUrl: 'https://example.com/success',
   failureRedirectUrl: 'https://example.com/failure',
+  prorationMode: 'upgrade', // optional
+  proratedProductId: 'prd_xxx', // optional
 })
 ```
 
-The API mirrors the current `flutter_orca` shape where possible:
-- `identify(customerEmail)`
-- `logout()`
-- `queryProducts(externalStore?)`
-- `purchase(entitlement, options?)`
-- `getActiveEntitlements(customerEmail?)`
-- `activeProduct(customerEmail?)`
-- `listEntitlements()`
+### Platform detection
 
-## Native mobile notes
+```ts
+const platform = await orca.platform()
+// 'web' | 'windows' | 'linux' | 'macos' | 'android' | 'ios'
+```
 
-This package now exposes mobile command hooks for:
-- `identify`
-- `logout`
-- `queryProducts`
-- `purchase`
-- `getActiveEntitlements`
-- `activeProduct`
-- `listEntitlements`
+## Native Integration
 
-You still need to add Android and iOS plugin projects under this package (`android/` and `ios/`) and implement command handlers that bridge into:
-- `orca-android` on Android
-- `orca-apple` on iOS/macOS
+### Android
 
-## macOS native bridge
+The Android plugin (`android/`) bridges to `orca-android` via JitPack:
 
-macOS now uses a Rust-to-Swift bridge to call `orca-apple` through FFI.
+- `com.github.maxint-app:orca-android:main`
 
-- Swift FFI entry points are implemented in `orca-apple/Sources/Orca/Core/OrcaFFI.swift`.
-- The plugin desktop implementation calls those FFI symbols from `src/desktop.rs`.
-- Linking to the Swift package is handled in `build.rs` using `swift-rs` on macOS via `https://github.com/maxint-app/orca-apple.git`.
+Requires Java 11+ toolchain.
 
-Android native dependency is pulled via JitPack as `com.github.maxint-app:orca-android:main`.
+### iOS
 
-If you hit a runtime Swift dylib loader error on macOS (`libswiftCore.dylib`), ensure your app minimum macOS version is high enough for your toolchain/runtime setup.
+The iOS plugin (`ios/`) bridges to `orca-apple` via SwiftPM:
+
+- `https://github.com/maxint-app/orca-apple.git`
+
+### macOS
+
+macOS uses a Rust->Swift FFI bridge into `orca-apple`:
+
+- FFI exports live in `orca-apple/Sources/Orca/Core/OrcaFFI.swift`
+- Rust desktop glue is in `src/desktop.rs` (`macos_ffi` module)
+- The Swift package is linked in `build.rs` via `swift-rs`
+
+## Native Command Mapping
+
+| JS method              | Rust command             | Android/iOS/macOS native |
+| ---------------------- | ------------------------ | ------------------------ |
+| `configure()`          | `configure`              | `configure`              |
+| `identify()`           | `identify`               | `identify`               |
+| `logout()`             | `logout`                 | `logout`                 |
+| `queryProducts()`      | `query_products`         | `queryProducts`          |
+| `purchase()`           | `purchase`               | `purchase`               |
+| `getActiveEntitlements()` | `get_active_entitlements` | `getActiveEntitlements`  |
+| `activeProduct()`      | `active_product`         | `activeProduct`          |
+| `listEntitlements()`   | `list_entitlements`      | `listEntitlements`       |
+
+## License
+
+MIT
