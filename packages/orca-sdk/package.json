@@ -1,0 +1,30 @@
+{
+  "name": "@maxint/orca-sdk",
+  "version": "1.0.0",
+  "description": "JavaScript SDK for Orca by Maxint",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "filter": "openapi-format http://localhost:8081/openapi.yaml -o dist/openapi-formatted.yaml --filterFile ./openapi-filters.yaml",
+    "generate": "pnpm filter; openapi-typescript ./dist/openapi-formatted.yaml --output ./src/schema.ts"
+  },
+  "keywords": [
+    "payment",
+    "revenue",
+    "stripe",
+    "gocardless",
+    "orca"
+  ],
+  "author": "Maxint Inc. <predrag.cvetkovski@maxint.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^26.3.0",
+    "openapi-format": "^1.33.6",
+    "openapi-typescript": "^7.10.1",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "openapi-fetch": "^0.17.0"
+  }
+}

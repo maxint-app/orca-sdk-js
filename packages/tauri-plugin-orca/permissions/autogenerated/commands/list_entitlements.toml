@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-list-entitlements"
+description = "Enables the list_entitlements command without any pre-configured scope."
+commands.allow = ["list_entitlements"]
+
+[[permission]]
+identifier = "deny-list-entitlements"
+description = "Denies the list_entitlements command without any pre-configured scope."
+commands.deny = ["list_entitlements"]
