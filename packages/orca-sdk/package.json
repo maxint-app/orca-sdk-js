@@ -2,11 +2,19 @@
   "name": "@maxint/orca-sdk",
   "version": "1.0.0",
   "description": "JavaScript SDK for Orca by Maxint",
-  "main": "index.js",
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "import": "./dist/index.js",
+    "default": "./dist/index.js"
+  },
   "type": "module",
   "scripts": {
     "filter": "openapi-format http://localhost:8081/openapi.yaml -o dist/openapi-formatted.yaml --filterFile ./openapi-filters.yaml",
-    "generate": "pnpm filter; openapi-typescript ./dist/openapi-formatted.yaml --output ./src/schema.ts"
+    "generate": "pnpm filter; openapi-typescript ./dist/openapi-formatted.yaml --output ./src/schema.ts",
+    "build": "tsc"
   },
   "keywords": [
     "payment",
