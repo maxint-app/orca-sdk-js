@@ -17,7 +17,6 @@
   ],
   "author": "Maxint Inc. <predrag.cvetkovski@maxint.com>",
   "license": "MIT",
-  "packageManager": "pnpm@10.20.0",
   "devDependencies": {
     "@types/node": "^26.3.0",
     "openapi-format": "^1.33.6",
