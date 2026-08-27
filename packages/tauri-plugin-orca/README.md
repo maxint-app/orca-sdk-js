@@ -51,3 +51,15 @@ This package now exposes mobile command hooks for:
 You still need to add Android and iOS plugin projects under this package (`android/` and `ios/`) and implement command handlers that bridge into:
 - `orca-android` on Android
 - `orca-apple` on iOS/macOS
+
+## macOS native bridge
+
+macOS now uses a Rust-to-Swift bridge to call `orca-apple` through FFI.
+
+- Swift FFI entry points are implemented in `orca-apple/Sources/Orca/Core/OrcaFFI.swift`.
+- The plugin desktop implementation calls those FFI symbols from `src/desktop.rs`.
+- Linking to the Swift package is handled in `build.rs` using `swift-rs` on macOS via `https://github.com/maxint-app/orca-apple.git`.
+
+Android native dependency is pulled via JitPack as `com.github.maxint-app:orca-android:main`.
+
+If you hit a runtime Swift dylib loader error on macOS (`libswiftCore.dylib`), ensure your app minimum macOS version is high enough for your toolchain/runtime setup.

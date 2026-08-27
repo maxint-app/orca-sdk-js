@@ -1,4 +1,3 @@
-import SwiftRs
 import Tauri
 import UIKit
 import WebKit

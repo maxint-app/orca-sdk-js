@@ -18,7 +18,7 @@ let package = Package(
     ],
     dependencies: [
         .package(name: "Tauri", path: "../.tauri/tauri-api"),
-        .package(name: "Orca", path: "../../../../orca-apple")
+        .package(url: "https://github.com/maxint-app/orca-apple.git", branch: "main")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.

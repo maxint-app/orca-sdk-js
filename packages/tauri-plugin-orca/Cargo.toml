@@ -16,3 +16,4 @@ thiserror = "2"
 
 [build-dependencies]
 tauri-plugin = { version = "2.6.3", features = ["build"] }
+swift-rs = { version = "1.0.7", features = ["build"] }
